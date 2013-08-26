@@ -107,7 +107,7 @@ class rabkTwttr
             foreach(explode('&', $tmp[1]) as $param)
             {
                 $param = explode('=', $param);
-                $query .= rawurlencode($param[0]) . '=' . rawurlencode($param[1]) . '&';
+                $query.= rawurlencode($param[0]) . '=' . rawurlencode($param[1]) . '&';
                 $arrParams[rawurlencode($param[0])] = rawurlencode($param[1]);
             }
             $query = rtrim($query, '&');
@@ -155,7 +155,7 @@ class rabkTwttr
             {
                 // Query Twitter to get a request token
                 $oauth_params['oauth_callback'] = $this->oauth_callback;
-                $query    = rabkTwttr::httpquery('oauth/request_token',     'POST', $oauth_params);
+                $query = rabkTwttr::httpquery('oauth/request_token', 'POST', $oauth_params);
 
                 // Parse results
                 parse_str($query);
@@ -205,8 +205,8 @@ class rabkTwttr
     private static function httpquery($URL, $method = 'GET', $authorization = '', $body = '', $returnJSON = false)
     {
         //
-        $arrHeader        = array();
-        $arrOptions    = array();
+        $arrHeader  = array();
+        $arrOptions = array();
 
         // Make sure URL is in correct format
         $URL = rabkTwttr::prepareURL($URL);
@@ -233,8 +233,8 @@ class rabkTwttr
         $arrOptions['http']['header']  = $header;
 
         // Send the request and wait for reply
-        $context  = stream_context_create($arrOptions);
-        $result = file_get_contents($URL, false, $context);
+        $context = stream_context_create($arrOptions);
+        $result  = file_get_contents($URL, false, $context);
 
         // Return JSON object if needed
         if($returnJSON)
@@ -246,7 +246,7 @@ class rabkTwttr
     private static function oauth_header($URL, $method, $authorization)
     {
         $param = array();
-        $DST = "OAuth ";
+        $DST   = "OAuth ";
 
         // For the purposes of the signature, no need for anything beyond '?'
         $tmp = explode("?", $URL);
