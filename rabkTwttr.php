@@ -1,6 +1,6 @@
 <?php
 
-//  ============================================================================
+// ===============================================================================
 //
 //  rabkTwttr: A Twitter API class in PHP
 //  Copyright (c) 2013, Robert Aboukhalil
@@ -18,7 +18,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  ============================================================================
+// ===============================================================================
 
 class rabkTwttr
 {
