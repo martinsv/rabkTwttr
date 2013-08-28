@@ -1,8 +1,8 @@
 <?php
 
-// ===============================================================================
+// =============================================================================
 //
-//  rabkTwttr: A Twitter API class in PHP
+//  rabkTwttr: A Twitter API library in PHP
 //  Copyright (c) 2013, Robert Aboukhalil
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -18,13 +18,17 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ===============================================================================
+// =============================================================================
+
+if(session_id() == '') {
+  session_start();
+}
 
 class rabkTwttr
 {
-    // ===========================================================================
-    // ==== Member variables =====================================================
-    // ===========================================================================
+    // =========================================================================
+    // ==== Member variables ===================================================
+    // =========================================================================
     
     // ---- Constants
     const url_default   = 'https://api.twitter.com/1.1/';
@@ -43,13 +47,16 @@ class rabkTwttr
     private $authenticated;
     private $oauth_callback;
 
-    // ===========================================================================
-    // ==== Constructor ==========================================================
-    // ===========================================================================
-    function __construct($mode, $oauth_callback = '')
+    // =========================================================================
+    // ==== Constructor ========================================================
+    // =========================================================================
+    function __construct($authReq = false, $oauth_callback = '')
     {
         // ---- Initialize variables
-        $this->mode           = $mode;
+        if($oauth_callback == '')
+          $oauth_callback = $_SERVER['SERVER_ADDR'] . $_SERVER['REQUEST_URI'];
+        
+        $this->mode           = $authReq ? rabkTwttr::MODE_USER : rabkTwttr::MODE_APP;
         $this->oauth_callback = $oauth_callback;
         $this->authenticated  = false;
 
@@ -57,9 +64,9 @@ class rabkTwttr
         $this->authenticate();
     }
 
-    // ===========================================================================
-    // ==== Query Twitter ========================================================
-    // ===========================================================================
+    // =========================================================================
+    // ==== Query Twitter ======================================================
+    // =========================================================================
     public function query($query, $method, $args)
     {
         // 
@@ -68,68 +75,57 @@ class rabkTwttr
         $returnJSON = true;
 
         if(count($tmp=explode('?', $query)) > 1)
-            die('Do not include ?var=value in your URL. Put those in an array in the 3rd argument to query()');
+            die('Do not include ?var=value in your URL. Put those in an ' .
+                'array in the 3rd argument of query()');
 
-        // ==== Authentication method for Application-only =========================
-        if($this->mode == rabkTwttr::MODE_APP)
-            $auth = 'Bearer ' . $_SESSION['access_token'];
-
-        // ==== Authentication for user mode =======================================
-        else if($this->mode == rabkTwttr::MODE_USER)
+        // ==== Process query based on whether GET or POST =====================
+        // ----  GET -----------------------------------------------------------
+        if($method == 'GET')
         {
-            $auth['oauth_token'] = $_SESSION['access_token'];
-
-            // GET
-            if($method == 'GET') {
-                $query .= '?';
-                foreach($args as $key => $value) {
-                    $query .= $key . '=' . $value . '&';
-                    $auth[$key] = $value;
-                }
-                $query = rtrim($query, '&');
-            }     else if($method == 'POST') {
-                foreach($args as $key => $value) {
-                    $body .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
-                    $auth[$key] = $value;
-                }
-                $body = rtrim($body, '&');
-            }
-            else
-                die("Error: unsupported method. Use either GET or POST.");
-        }
-
-        // ==== Deal with URL ======================================================
-        // ---- If added e.g. "?q=#something" to URL, need to encode it ------------
-        $arrParams = Array();
-        if(count($tmp=explode('?', $query)) > 1)
-        {
-            $query = $tmp[0] . "?";
-            foreach(explode('&', $tmp[1]) as $param)
+            $query .= '?';
+            foreach($args as $key => $value)
             {
-                $param = explode('=', $param);
-                $query.= rawurlencode($param[0]) . '=' . rawurlencode($param[1]) . '&';
-                $arrParams[rawurlencode($param[0])] = rawurlencode($param[1]);
+                $query .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
+                $auth[$key] = $value;
             }
             $query = rtrim($query, '&');
         }
+        // ----  POST ----------------------------------------------------------
+        else if($method == 'POST')
+        {
+            foreach($args as $key => $value)
+            {
+                $body .= rawurlencode($key) . '=' . rawurlencode($value) . '&';
+                $auth[$key] = $value;
+            }
+            $body = rtrim($body, '&');
+        }
+        else
+            die("Error: unsupported method. Use either GET or POST.");
 
-        // ---- Filter and further process URL from query --------------------------
+        // ==== Authentication method for Application-only or user mode ========
+        if($this->mode == rabkTwttr::MODE_APP)
+            $auth = 'Bearer ' . $_SESSION['access_token'];
+        else if($this->mode == rabkTwttr::MODE_USER)
+            $auth['oauth_token'] = $_SESSION['access_token'];
+
+        // ==== Filter and further process URL from query ======================
         $this->URL = $this->prepareURL($query);
 
         return rabkTwttr::httpquery($query, $method, $auth, $body, $returnJSON);
     }
 
 
-    // ===========================================================================
-    // ==== Authenticate application or user =====================================
-    // ===========================================================================
+    // =========================================================================
+    // ==== Authenticate application or user ===================================
+    // =========================================================================
     private function authenticate()
     {
         // If already authenticated, no need to do it again
-        if($this->is_authenticated())
+        if($this->is_authenticated() && $this->authenticated)
             return true;
 
-        // ==== Application-only authentication; no need for signed oAuth ==========
+        // ==== Application-only authentication; no need for signed oAuth ======
         if($this->mode == rabkTwttr::MODE_APP)
         {
             // Encode consumer key and consumer secret
@@ -147,10 +143,10 @@ class rabkTwttr
             $_SESSION['access_token'] = $query->access_token;
         }
 
-        // ==== User authentication: need signed oAuth =============================
+        // ==== User authentication: need signed oAuth =========================
         else if($this->mode == rabkTwttr::MODE_USER)
         {
-            // ---- If need to redirect to Twitter for user login --------------------
+            // ---- If need to redirect to Twitter for user login --------------
             if(!isset($_GET['oauth_token']) && !isset($_GET['oauth_verifier']))
             {
                 // Query Twitter to get a request token
@@ -166,42 +162,42 @@ class rabkTwttr
                 echo '<script>window.location="https://api.twitter.com/oauth/authenticate?oauth_token=' . $oauth_token . '";</script>';
             }
 
-            // ---- Once redirected from Twitter login page --------------------------
+            // ---- Once redirected from Twitter login page --------------------
             else
             {
                 // Query Twitter to get the access token
                 $oauth_params['oauth_token']    = $_GET['oauth_token'];
                 $oauth_params['oauth_verifier'] = $_GET['oauth_verifier'];
 
-                $body = 'oauth_verifier=' . $oauth_verifier;
+                $body = 'oauth_verifier=' . $oauth_params['oauth_verifier'];
                 $query = rabkTwttr::httpquery('oauth/access_token', 'POST', $oauth_params, $body);
-                parse_str($query);
 
                 // Save tokens to session variable
+                parse_str($query);
                 $_SESSION['access_token']        = $oauth_token;
                 $_SESSION['access_token_secret'] = $oauth_token_secret;
 
+                $this->authenticated  = true;
                 return true;
             }
         }
         else
             die('Error: invalid mode.');
     }
-
-    // ==== 
+    // ==== Check if user is already authenticated =============================
     private function is_authenticated()
     {
         if($this->mode == rabkTwttr::MODE_APP)
-            return isset($_SESSION["access_token"]);
+            return isset($_SESSION['access_token']);
         
         if($this->mode == rabkTwttr::MODE_USER)
-            return isset($_SESSION["access_token"]) && isset($_SESSION["access_token_secret"]);
+            return isset($_SESSION['access_token']) && isset($_SESSION['access_token_secret']);
     }
 
 
-    // ===========================================================================
-    // ==== Send an HTTP request (does not use cURL) =============================
-    // ===========================================================================
+    // =========================================================================
+    // ==== Send an HTTP request (does not use cURL) ===========================
+    // =========================================================================
     private static function httpquery($URL, $method = 'GET', $authorization = '', $body = '', $returnJSON = false)
     {
         //
@@ -216,13 +212,13 @@ class rabkTwttr
         if(strlen($body) > 0)
             $arrHeader['Content-Length'] = strlen($body);
         
-        // ==== Create authorization field =========================================
+        // ==== Create authorization field =====================================
         if(!is_array($authorization))
             $arrHeader['Authorization'] = $authorization;
         else
             $arrHeader['Authorization'] = rabkTwttr::oauth_header($URL, $method, $authorization);
 
-        // ==== Setup header =======================================================
+        // ==== Setup header ===================================================
         $header = '';
         foreach($arrHeader as $key => $value)
             $header .= "$key: $value\r\n";
@@ -242,7 +238,7 @@ class rabkTwttr
 
         return $result;
     }
-    // ==== Create oAuth header ==================================================
+    // ==== Create oAuth header ================================================
     private static function oauth_header($URL, $method, $authorization)
     {
         $param = array();
@@ -265,7 +261,7 @@ class rabkTwttr
             $param[$key] = $value;
         $param = array_filter($param);
 
-        // ---- Sign the HTTP request --------------------------------------------
+        // ---- Sign the HTTP request ------------------------------------------
         $oauth_signature_base = "";
 
         $param2 = $param;
@@ -283,7 +279,7 @@ class rabkTwttr
         $oauth_signing_key = rawurlencode(rabkTwttr::$consumer_secret) . '&' . @rawurlencode($_SESSION['access_token_secret']);
         $param['oauth_signature'] = base64_encode(hash_hmac('sha1', $oauth_signature_base, $oauth_signing_key, true));
 
-        // ---- Create header ----------------------------------------------------
+        // ---- Create header --------------------------------------------------
         foreach($param as $key => $value)
             if(preg_match('/oauth_/', $key))
                 $DST .= rawurlencode($key) . '="' . rawurlencode($value) . '", ';
@@ -292,9 +288,9 @@ class rabkTwttr
         return $DST;
     }
 
-    // ===========================================================================
-    // ==== Create URL from query (e.g. search/tweets.json) or from URL ==========
-    // ===========================================================================
+    // =========================================================================
+    // ==== Create URL from query (e.g. search/tweets.json) or from URL ========
+    // =========================================================================
     private static function prepareURL($query)
     {
         // Is query isn't a URL, prepend default URL
