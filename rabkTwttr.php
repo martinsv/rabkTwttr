@@ -37,28 +37,30 @@ class rabkTwttr
     const MODE_APP      = 0;
     const MODE_USER     = 1;
 
-    // ---- Configuration
-    public static $consumer_key;
-    public static $consumer_secret;
-
     // ---- Variables
     private $URL;
     private $mode;
     private $authenticated;
     private $oauth_callback;
 
+    // ---- Configuration
+    private static $consumer_key;
+    private static $consumer_secret;
+
     // =========================================================================
     // ==== Constructor ========================================================
     // =========================================================================
-    function __construct($authReq = false, $oauth_callback = '')
+    function __construct($consumer_key, $consumer_secret, $authReq = false, $oauth_callback = '')
     {
         // ---- Initialize variables
         if($oauth_callback == '')
           $oauth_callback = $_SERVER['SERVER_ADDR'] . $_SERVER['REQUEST_URI'];
-        
-        $this->mode           = $authReq ? rabkTwttr::MODE_USER : rabkTwttr::MODE_APP;
-        $this->oauth_callback = $oauth_callback;
-        $this->authenticated  = false;
+
+        $this->mode                 = $authReq ? rabkTwttr::MODE_USER : rabkTwttr::MODE_APP;
+        $this->oauth_callback       = $oauth_callback;
+        $this->authenticated        = false;
+        rabkTwttr::$consumer_key    = $consumer_key;
+        rabkTwttr::$consumer_secret = $consumer_secret;
 
         // ---- Authenticate
         $this->authenticate();
