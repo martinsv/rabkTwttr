@@ -9,12 +9,48 @@ To get started, you'll need to register your application with Twitter:
 2. Enter a name, description and website.
 3. Once done, you'll be given a `Consumer key` and `Consumer secret`.
 
-### Sample code - Search for tweets
-
+### Search Twitter by hashtag
 ```php
 <?php
 
 include "rabkTwttr.php";
+
+define('CONSUMER_KEY', '[CONSUMER KEY]');
+define('CONSUMER_SECRET', '[CONSUMER SECRET]');
+
+// Create Twitter object; need user authentication through Twitter
+$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET, $auth = true);
+
+// Setup a query: get 3 latest post from user RobAboukhalil
+$query = array('count' => 3, 'screen_name' => 'RobAboukhalil');
+
+// Do the query and output results
+$tweets = $twitter->query('statuses/user_timeline.json', 'GET', $query);
+foreach($tweets as $tweet)
+  echo '<li><b>@' . $tweet->user->screen_name . '</b>: ' . $tweet->text . '</li>';
+
+?>
+```
+
+### List a user's latest tweets
+```php
+<?php
+
+include "rabkTwttr.php";
+
+define('CONSUMER_KEY', '[CONSUMER KEY]');
+define('CONSUMER_SECRET', '[CONSUMER SECRET]');
+
+// Create Twitter object; need user authentication through Twitter
+$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET, $auth = true);
+
+// Setup a query: get 3 latest post from user RobAboukhalil
+$query = array('count' => 3, 'screen_name' => 'RobAboukhalil');
+
+// Do the query and output results
+$tweets = $twitter->query('statuses/user_timeline.json', 'GET', $query);
+foreach($tweets as $tweet)
+  echo '<li><b>@' . $tweet->user->screen_name . '</b>: ' . $tweet->text . '</li>';
 
 ?>
 ```
