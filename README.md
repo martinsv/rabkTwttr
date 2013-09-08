@@ -18,13 +18,11 @@ include "rabkTwttr.php";
 define('CONSUMER_KEY', '[CONSUMER KEY]');
 define('CONSUMER_SECRET', '[CONSUMER SECRET]');
 
-// Create Twitter object; no need for user authentication through Twitter
-$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET);
-
 // Setup a query: get 10 latest tweets with hashtag #bigdata
+$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET);
 $query = array('count' => 10, 'q' => "#bigdata");
 
-// Do the query and output results
+// Perform query and output results
 $tweets = $twitter->query('search/tweets.json', 'GET', $query);
 foreach($tweets->statuses as $tweet)
   echo '<li><b>@' . $tweet->user->screen_name . '</b>: ' . $tweet->text . '</li>';
@@ -41,17 +39,36 @@ include "rabkTwttr.php";
 define('CONSUMER_KEY', '[CONSUMER KEY]');
 define('CONSUMER_SECRET', '[CONSUMER SECRET]');
 
-// Create Twitter object; need user authentication through Twitter
-$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET, $auth = true);
-
 // Setup a query: get 3 latest post from user RobAboukhalil
+// Note: you need to authenticate ($auth=true) if you're not doing searches
+$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET, $auth = true);
 $query = array('count' => 3, 'screen_name' => 'RobAboukhalil');
 
-// Do the query and output results
+// Perform query and output results
 $tweets = $twitter->query('statuses/user_timeline.json', 'GET', $query);
 foreach($tweets as $tweet)
   echo '<li><b>@' . $tweet->user->screen_name . '</b>: ' . $tweet->text . '</li>';
 
 ?>
 ```
+
+### Post on user's timeline
+```php
+<?php
+
+include "rabkTwttr.php";
+
+define('CONSUMER_KEY', '[CONSUMER KEY]');
+define('CONSUMER_SECRET', '[CONSUMER SECRET]');
+
+// Setup the query
+$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET, $auth = true);
+$query = array('status' => "My first tweet using the rabkTwttr Twitter library");
+
+// Post on the user's timeline
+$twitter->query('statuses/update.json', 'POST', $query);
+
+?>
+```
+
 
