@@ -52,7 +52,7 @@ foreach($tweets as $tweet)
 ?>
 ```
 
-### Post on user's timeline
+### Post on current user's timeline
 ```php
 <?php
 
