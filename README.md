@@ -1,15 +1,14 @@
-rabkTwttr: a Twitter API library in PHP
+rabkTwttr: A Twitter API Library in PHP
 =========
 
-### Setup
+### How to get started
 
-To get started, you'll need to register your application with Twitter:
+1. [Register your application](https://dev.twitter.com/apps/new) with Twitter 
+2. Include the file `rabkTwttr.php` in your code.
 
-1. Login to Twitter's [Create a New Application](https://dev.twitter.com/apps/new) page.
-2. Enter a name, description and website.
-3. Once done, you'll be given a `Consumer key` and `Consumer secret`.
+### Sample Code
 
-### Search Twitter by hashtag
+###### Search Twitter by hashtag
 ```php
 <?php
 
@@ -30,7 +29,7 @@ foreach($tweets->statuses as $tweet)
 ?>
 ```
 
-### List a user's latest tweets
+###### List a user's latest tweets
 ```php
 <?php
 
@@ -52,7 +51,7 @@ foreach($tweets as $tweet)
 ?>
 ```
 
-### Post on current user's timeline
+###### Post on current user's timeline
 ```php
 <?php
 
@@ -70,5 +69,6 @@ $twitter->query('statuses/update.json', 'POST', $query);
 
 ?>
 ```
+
 
 
