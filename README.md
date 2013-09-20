@@ -12,17 +12,14 @@ rabkTwttr: A Twitter API Library in PHP
 ```php
 <?php
 
+// Initialize
 include "rabkTwttr.php";
+$twitter = new rabkTwttr('[CONSUMER KEY]', '[CONSUMER SECRET]');
 
-define('CONSUMER_KEY', '[CONSUMER KEY]');
-define('CONSUMER_SECRET', '[CONSUMER SECRET]');
+// Query Twitter for 10 latest tweets with hashtag #bigdata
+$tweets = $twitter->query('search/tweets.json', 'GET', array('count'=>10, 'q'=>"#bigdata"));
 
-// Setup a query: get 10 latest tweets with hashtag #bigdata
-$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET);
-$query = array('count' => 10, 'q' => "#bigdata");
-
-// Perform query and output results
-$tweets = $twitter->query('search/tweets.json', 'GET', $query);
+// Output results
 foreach($tweets->statuses as $tweet)
   echo '<li><b>@' . $tweet->user->screen_name . '</b>: ' . $tweet->text . '</li>';
 
@@ -33,18 +30,15 @@ foreach($tweets->statuses as $tweet)
 ```php
 <?php
 
+// Initialize
+// Note: need to do OAuth authentication ($auth=true) to list user's tweets
 include "rabkTwttr.php";
+$twitter = new rabkTwttr('[CONSUMER KEY]', '[CONSUMER SECRET]', $auth = true);
 
-define('CONSUMER_KEY', '[CONSUMER KEY]');
-define('CONSUMER_SECRET', '[CONSUMER SECRET]');
+// Get 3 latest post from user RobAboukhalil
+$tweets = $twitter->query('statuses/user_timeline.json', 'GET', array('count'=>3, 'screen_name'=>'RobAboukhalil'));
 
-// Setup a query: get 3 latest post from user RobAboukhalil
-// Note: you need to authenticate ($auth=true) if you're not doing searches
-$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET, $auth = true);
-$query = array('count' => 3, 'screen_name' => 'RobAboukhalil');
-
-// Perform query and output results
-$tweets = $twitter->query('statuses/user_timeline.json', 'GET', $query);
+// Output results
 foreach($tweets as $tweet)
   echo '<li><b>@' . $tweet->user->screen_name . '</b>: ' . $tweet->text . '</li>';
 
@@ -55,20 +49,13 @@ foreach($tweets as $tweet)
 ```php
 <?php
 
+// Initialize
+// Note: need to do OAuth authentication ($auth=true) to post on my timeline
 include "rabkTwttr.php";
+$twitter = new rabkTwttr('[CONSUMER KEY]', '[CONSUMER SECRET]', $auth = true);
 
-define('CONSUMER_KEY', '[CONSUMER KEY]');
-define('CONSUMER_SECRET', '[CONSUMER SECRET]');
-
-// Setup the query
-$twitter = new rabkTwttr(CONSUMER_KEY, CONSUMER_SECRET, $auth = true);
-$query = array('status' => "My first tweet using the rabkTwttr Twitter library");
-
-// Post on the user's timeline
-$twitter->query('statuses/update.json', 'POST', $query);
+// Post on user's timeline
+$twitter->query('statuses/update.json', 'POST', array('status' => "My first tweet using the rabkTwttr Twitter library! http://github.com/robertaboukhalil/rabkTwttr"));
 
 ?>
 ```
-
-
-
