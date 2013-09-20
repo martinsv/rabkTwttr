@@ -1,9 +1,9 @@
 rabkTwttr: A Twitter API Library in PHP
 =========
 
-### How to get started
+### Get started
 
-1. [Register your application](https://dev.twitter.com/apps/new) with Twitter 
+1. [Register your application](https://dev.twitter.com/apps/new) with Twitter and obtain a `Consumer Key` and a `Consumer Secret`.
 2. Include the file `rabkTwttr.php` in your code.
 
 ### Sample Code
@@ -14,7 +14,7 @@ rabkTwttr: A Twitter API Library in PHP
 
 // Initialize
 include "rabkTwttr.php";
-$twitter = new rabkTwttr('[CONSUMER KEY]', '[CONSUMER SECRET]');
+$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]');
 
 // Query Twitter for 10 latest tweets with hashtag #bigdata
 $tweets = $twitter->query('search/tweets.json', 'GET', array('count'=>10, 'q'=>"#bigdata"));
@@ -31,9 +31,9 @@ foreach($tweets->statuses as $tweet)
 <?php
 
 // Initialize
-// Note: need to do OAuth authentication ($auth=true) to list user's tweets
+// Note: need to do OAuth authentication ($oAuth=true) to list user's tweets
 include "rabkTwttr.php";
-$twitter = new rabkTwttr('[CONSUMER KEY]', '[CONSUMER SECRET]', $auth = true);
+$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]', $oAuth = true);
 
 // Get 3 latest post from user RobAboukhalil
 $tweets = $twitter->query('statuses/user_timeline.json', 'GET', array('count'=>3, 'screen_name'=>'RobAboukhalil'));
@@ -45,16 +45,16 @@ foreach($tweets as $tweet)
 ?>
 ```
 
-###### Post on current user's timeline
+###### Write a tweet on user's timeline
 ```php
 <?php
 
 // Initialize
-// Note: need to do OAuth authentication ($auth=true) to post on my timeline
+// Note: need to do OAuth authentication ($oAuth=true) to post on my timeline
 include "rabkTwttr.php";
-$twitter = new rabkTwttr('[CONSUMER KEY]', '[CONSUMER SECRET]', $auth = true);
+$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]', $oAuth = true);
 
-// Post on user's timeline
+// Write a tweet
 $twitter->query('statuses/update.json', 'POST', array('status' => "My first tweet using the rabkTwttr Twitter library! http://github.com/robertaboukhalil/rabkTwttr"));
 
 ?>
