@@ -50,13 +50,13 @@ class rabkTwttr
     // =========================================================================
     // ==== Constructor ========================================================
     // =========================================================================
-    function __construct($consumer_key, $consumer_secret, $authReq = false, $oauth_callback = '')
+    function __construct($consumer_key, $consumer_secret, $oAuth = true, $oauth_callback = '')
     {
         // ---- Initialize variables
         if($oauth_callback == '')
           $oauth_callback = $_SERVER['SERVER_ADDR'] . $_SERVER['REQUEST_URI'];
 
-        $this->mode                 = $authReq ? rabkTwttr::MODE_USER : rabkTwttr::MODE_APP;
+        $this->mode                 = $oAuth ? rabkTwttr::MODE_USER : rabkTwttr::MODE_APP;
         $this->oauth_callback       = $oauth_callback;
         $this->authenticated        = false;
         rabkTwttr::$consumer_key    = $consumer_key;
