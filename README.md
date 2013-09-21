@@ -8,6 +8,10 @@ rabkTwttr: A Twitter API Library in PHP
 
 ### Sample Code
 
+
+
+
+
 ###### Search Twitter by hashtag
 ```php
 <?php
@@ -31,9 +35,8 @@ foreach($tweets->statuses as $tweet)
 <?php
 
 // Initialize
-// Note: need to do OAuth authentication ($oAuth=true) to list user's tweets
 include "rabkTwttr.php";
-$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]', $oAuth = true);
+$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]');
 
 // Get 3 latest post from user RobAboukhalil
 $tweets = $twitter->query('statuses/user_timeline.json', 'GET', array('count'=>3, 'screen_name'=>'RobAboukhalil'));
@@ -50,9 +53,8 @@ foreach($tweets as $tweet)
 <?php
 
 // Initialize
-// Note: need to do OAuth authentication ($oAuth=true) to post on my timeline
 include "rabkTwttr.php";
-$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]', $oAuth = true);
+$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]');
 
 // Write a tweet
 $twitter->query('statuses/update.json', 'POST', array('status' => "My first tweet using the rabkTwttr Twitter library! http://github.com/robertaboukhalil/rabkTwttr"));
