@@ -18,7 +18,9 @@ rabkTwttr: A Twitter API Library in PHP
 
 // Initialize
 include "rabkTwttr.php";
-$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]');
+// $oAuth = false means there's no need to ask current user to login because we're only searching Twitter,
+// and not doing any account-dependent activity
+$twitter = new rabkTwttr('[Consumer Key]', '[Consumer Secret]', $oAuth = false);
 
 // Query Twitter for 10 latest tweets with hashtag #bigdata
 $tweets = $twitter->query('search/tweets.json', 'GET', array('count'=>10, 'q'=>"#bigdata"));
