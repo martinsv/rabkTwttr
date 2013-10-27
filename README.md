@@ -3,8 +3,11 @@ rabkTwttr: A Twitter API Library in PHP
 
 ### Get started
 
-1. [Register your application](https://dev.twitter.com/apps/new) with Twitter and obtain a `Consumer Key` and a `Consumer Secret`.
-2. Include the file `rabkTwttr.php` in your code.
+1. **[Register your application](https://dev.twitter.com/apps/new) with Twitter** and obtain a `Consumer Key` and a `Consumer Secret`.
+ * Go to your [Twitter Applications](https://dev.twitter.com/apps), click on your newly-created app and click *Settings*.
+ * Under *Access*, choose which access permissions your application needs.
+ * Enable *Allow this application to be used to Sign in with Twitter*.
+2. **Include the file `rabkTwttr.php` in your code**.
 
 ### Sample Code
 
